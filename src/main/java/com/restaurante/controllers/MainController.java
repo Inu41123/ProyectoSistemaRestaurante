@@ -10,24 +10,16 @@ public class MainController {
     @FXML private Tab tabPlatos;
     @FXML private Tab tabPedidos;
 
-    // Referencias a los controladores de cada pestaña
-    private ClienteController clienteController;
-    private PlatoController platoController;
-    private PedidoController pedidoController;
+    @FXML private ClienteController clienteController;
+    @FXML private PlatoController platoController;
+    @FXML private PedidoController pedidoController;
 
-    // Metodo para inicialización tardía
     public void postInitialize() {
         try {
-            // Inicializar controladores de pestañas
-            clienteController = new ClienteController();
-            platoController = new PlatoController();
-            pedidoController = new PedidoController();
-
-            // Cargar datos después de que la ventana está visible
+            // Ahora los controladores ya están inyectados por FXML
             clienteController.cargarClientes();
             platoController.cargarPlatos();
             pedidoController.cargarDatosIniciales();
-
         } catch (Exception e) {
             System.err.println("Error en postInitialize: " + e.getMessage());
         }

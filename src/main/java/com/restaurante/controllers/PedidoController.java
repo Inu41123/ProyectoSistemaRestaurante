@@ -3,6 +3,7 @@ package com.restaurante.controllers;
 import com.restaurante.models.*;
 import com.restaurante.services.*;
 import net.synedra.validatorfx.Validator;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -38,19 +39,20 @@ public class PedidoController {
     @FXML
     private void initialize() {
         configurarComponentes();
-        cargarDatosIniciales();
-        configurarValidaciones();
-        actualizarTotal();
+        Platform.runLater(() -> {
+            cargarDatosIniciales();
+            configurarValidaciones();
+            actualizarTotal();
+        });
     }
 
     private void configurarComponentes() {
         spCantidad.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1));
 
         colPlato.setCellValueFactory(cd -> cd.getValue().getPlato().nombreProperty());
-        colCantidad.setCellValueFactory(cd -> cd.getValue().cantidadProperty()); // Cambio aquí
+        colCantidad.setCellValueFactory(cd -> cd.getValue().cantidadProperty());
         colPrecio.setCellValueFactory(cd -> cd.getValue().getPlato().precioProperty().asObject());
 
-        // Corrección en el cálculo del subtotal
         colSubtotal.setCellValueFactory(cd -> {
             double subtotal = cd.getValue().getPlato().getPrecio() * cd.getValue().getCantidad();
             return new SimpleObjectProperty<>(subtotal);
@@ -102,7 +104,6 @@ public class PedidoController {
                 })
                 .decorates(cbClientes);
 
-        // SOLUCIÓN CORRECTA - usa itemsProperty() de la TableView
         validator.createCheck()
                 .dependsOn("platos", tablaPlatosSeleccionados.itemsProperty())
                 .withMethod(c -> {
@@ -194,9 +195,11 @@ public class PedidoController {
     }
 
     private void mostrarError(String mensaje) {
-        Notifications.create()
-                .title("Error")
-                .text(mensaje)
-                .showError();
+        Platform.runLater(() -> {
+            Notifications.create()
+                    .title("Error")
+                    .text(mensaje)
+                    .showError();
+        });
     }
 }

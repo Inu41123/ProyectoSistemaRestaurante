@@ -33,11 +33,12 @@ public class PlatoController {
     private void initialize() {
         configurarTabla();
         configurarValidaciones();
-        cargarPlatos();
-
-        tablaPlatos.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldSelection, newSelection) -> seleccionarPlato(newSelection)
-        );
+        Platform.runLater(() -> {
+            cargarPlatos();
+            tablaPlatos.getSelectionModel().selectedItemProperty().addListener(
+                    (obs, oldSelection, newSelection) -> seleccionarPlato(newSelection)
+            );
+        });
     }
 
     private void configurarTabla() {

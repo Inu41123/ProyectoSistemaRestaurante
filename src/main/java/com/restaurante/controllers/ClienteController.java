@@ -33,11 +33,12 @@ public class ClienteController {
     private void initialize() {
         configurarTabla();
         configurarValidaciones();
-        cargarClientes();
-
-        tablaClientes.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldSelection, newSelection) -> seleccionarCliente(newSelection)
-        );
+        Platform.runLater(() -> {
+            cargarClientes();
+            tablaClientes.getSelectionModel().selectedItemProperty().addListener(
+                    (obs, oldSelection, newSelection) -> seleccionarCliente(newSelection)
+            );
+        });
     }
 
     private void configurarTabla() {
