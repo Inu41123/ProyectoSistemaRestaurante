@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.restaurante.controllers.MainController"
+      prefHeight="600" prefWidth="800">
+
+    <TabPane tabClosingPolicy="UNAVAILABLE">
+        <Tab text="Clientes">
+            <fx:include source="clientes.fxml"/>
+        </Tab>
+        <Tab text="Platos">
+            <fx:include source="platos.fxml"/>
+        </Tab>
+        <Tab text="Pedidos">
+            <fx:include source="pedidos.fxml"/>
+        </Tab>
+        <Tab text="Reportes">
+            <!-- Contenido para reportes -->
+        </Tab>
+    </TabPane>
+</VBox>

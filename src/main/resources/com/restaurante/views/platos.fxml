@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.restaurante.controllers.PlatoController" spacing="10">
+
+    <HBox spacing="10" style="-fx-padding: 10;">
+        <Label text="Nombre:" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="txtNombre" promptText="Nombre del plato" style="-fx-pref-width: 300;"/>
+
+        <Label text="Precio:" style="-fx-font-weight: bold; -fx-padding: 0 0 0 20;"/>
+        <TextField fx:id="txtPrecio" promptText="0.00" style="-fx-pref-width: 100;"/>
+
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarPlato"
+                style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
+        <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarPlato" disable="true"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button text="Limpiar" onAction="#limpiarFormulario"/>
+    </HBox>
+
+    <TableView fx:id="tablaPlatos" style="-fx-padding: 10;">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" style="-fx-pref-width: 50;"/>
+            <TableColumn fx:id="colNombre" text="Nombre" style="-fx-pref-width: 250;"/>
+            <TableColumn fx:id="colPrecio" text="Precio" style="-fx-pref-width: 100;"/>
+        </columns>
+    </TableView>
+</VBox>

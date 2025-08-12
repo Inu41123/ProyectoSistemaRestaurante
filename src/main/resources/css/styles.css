@@ -1,0 +1,27 @@
+.tab-pane {
+    -fx-tab-min-height: 40px;
+    -fx-tab-max-height: 40px;
+    -fx-tab-min-width: 100px;
+}
+
+.tab {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.root {
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.button {
+    -fx-cursor: hand;
+}
+
+.table-view {
+    -fx-padding: 10;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}

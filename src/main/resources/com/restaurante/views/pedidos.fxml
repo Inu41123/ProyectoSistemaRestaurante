@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.restaurante.controllers.PedidoController" spacing="10">
+
+    <HBox spacing="10" style="-fx-padding: 10;">
+        <Label text="Cliente:" style="-fx-font-weight: bold;"/>
+        <ComboBox fx:id="cbClientes" style="-fx-pref-width: 300;"/>
+    </HBox>
+
+    <HBox spacing="10" style="-fx-padding: 10;">
+        <VBox spacing="10">
+            <Label text="Platos Disponibles" style="-fx-font-weight: bold;"/>
+            <TableView fx:id="tablaPlatosDisponibles" style="-fx-pref-height: 200; -fx-pref-width: 400;">
+                <columns>
+                    <TableColumn text="Nombre">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="nombre" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Precio">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="precio" />
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <VBox spacing="10" style="-fx-padding: 0 0 0 20;">
+            <Label text="Cantidad:" style="-fx-font-weight: bold;"/>
+            <Spinner fx:id="spCantidad" style="-fx-pref-width: 100;"/>
+            <Button fx:id="btnAgregar" text="Agregar" onAction="#agregarPlato"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarPlato"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        </VBox>
+    </HBox>
+
+    <VBox spacing="10" style="-fx-padding: 10;">
+        <Label text="Platos Seleccionados" style="-fx-font-weight: bold;"/>
+        <TableView fx:id="tablaPlatosSeleccionados" style="-fx-pref-height: 200;">
+            <columns>
+                <TableColumn fx:id="colPlato" text="Plato" style="-fx-pref-width: 200;"/>
+                <TableColumn fx:id="colCantidad" text="Cantidad" style="-fx-pref-width: 80;"/>
+                <TableColumn fx:id="colPrecio" text="Precio Unitario" style="-fx-pref-width: 120;"/>
+                <TableColumn fx:id="colSubtotal" text="Subtotal" style="-fx-pref-width: 120;"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <HBox style="-fx-padding: 10; -fx-alignment: center-right;">
+        <Label fx:id="lblTotal" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+        <Button fx:id="btnGuardar" text="Guardar Pedido" onAction="#guardarPedido"
+                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 8 15; -fx-font-size: 14;"/>
+    </HBox>
+</VBox>
