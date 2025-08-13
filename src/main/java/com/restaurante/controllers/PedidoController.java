@@ -30,10 +30,11 @@ public class PedidoController {
     @FXML private Button btnAgregar;
     @FXML private Button btnEliminar;
     @FXML private Button btnGuardar;
+    @FXML private Button btnRefrescarPedidos;
 
     @FXML private TableView<Pedido> tablaPedidos;
     @FXML private TableColumn<Pedido, Integer> colPedidoId;
-    @FXML private TableColumn<Pedido, Integer> colCliente;
+    @FXML private TableColumn<Pedido, String> colCliente;
     @FXML private TableColumn<Pedido, LocalDateTime> colFecha;
     @FXML private TableColumn<Pedido, Double> colTotal;
 
@@ -85,14 +86,9 @@ public class PedidoController {
         });
 
         colPedidoId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colCliente.setCellValueFactory(new PropertyValueFactory<>("clienteId"));
+        colCliente.setCellValueFactory(new PropertyValueFactory<>("clienteNombre")); // 👈 nombre del cliente
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-        colTotal.setCellValueFactory(cd -> {
-            double total = cd.getValue().getItems().stream()
-                    .mapToDouble(item -> item.getPlato().getPrecio() * item.getCantidad())
-                    .sum();
-            return new SimpleObjectProperty<>(total);
-        });
+        colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
 
         colTotal.setCellFactory(tc -> new TableCell<>() {
             @Override
@@ -199,6 +195,7 @@ public class PedidoController {
             nuevoPedido.setClienteId(cbClientes.getValue().getId());
             nuevoPedido.setFecha(LocalDateTime.now());
             nuevoPedido.setItems(new ArrayList<>(itemsPedido));
+            nuevoPedido.setTotal(nuevoPedido.calcularTotal());
 
             pedidoService.crearPedido(nuevoPedido);
             mostrarExito("Pedido creado exitosamente");
@@ -207,6 +204,20 @@ public class PedidoController {
         } catch (Exception e) {
             mostrarError("Error al guardar pedido: " + e.getMessage());
         }
+    }
+
+    @FXML
+    private void refrescarPedidos() {
+        cargarDatosIniciales();
+        cargarPedidos();
+        itemsPedido.clear();
+        tablaPlatosSeleccionados.refresh();
+        actualizarTotal();
+
+        Notifications.create()
+                .title("Actualizado")
+                .text("La vista de pedidos se ha refrescado")
+                .showInformation();
     }
 
     private void actualizarTotal() {

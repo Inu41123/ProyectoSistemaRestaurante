@@ -58,15 +58,18 @@
                 style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 8 15; -fx-font-size: 14;"/>
     </HBox>
 
-    <VBox spacing="10" style="-fx-padding: 10;">
+    <HBox spacing="10" style="-fx-padding: 10;">
         <Label text="Pedidos Realizados" style="-fx-font-weight: bold;"/>
-        <TableView fx:id="tablaPedidos" style="-fx-pref-height: 200;">
-            <columns>
-                <TableColumn fx:id="colPedidoId" text="ID" style="-fx-pref-width: 60;"/>
-                <TableColumn fx:id="colCliente" text="Cliente ID" style="-fx-pref-width: 100;"/>
-                <TableColumn fx:id="colFecha" text="Fecha" style="-fx-pref-width: 160;"/>
-                <TableColumn fx:id="colTotal" text="Total" style="-fx-pref-width: 100;"/>
-            </columns>
-        </TableView>
-    </VBox>
+        <Button fx:id="btnRefrescarPedidos" text="⟳" onAction="#refrescarPedidos"
+                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <TableView fx:id="tablaPedidos" style="-fx-pref-height: 200;">
+        <columns>
+            <TableColumn fx:id="colPedidoId" text="ID" style="-fx-pref-width: 60;"/>
+            <TableColumn fx:id="colCliente" text="Cliente" style="-fx-pref-width: 150;"/>
+            <TableColumn fx:id="colFecha" text="Fecha" style="-fx-pref-width: 160;"/>
+            <TableColumn fx:id="colTotal" text="Total" style="-fx-pref-width: 100;"/>
+        </columns>
+    </TableView>
 </VBox>

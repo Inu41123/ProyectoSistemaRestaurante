@@ -1,12 +1,9 @@
 package com.restaurante.dao;
 
 import com.restaurante.models.*;
-import com.restaurante.models.Pedido;
 import com.restaurante.utils.DatabaseConnection;
-import lombok.Data;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class PedidoDAO {
 
             stmtPedido.setInt(1, pedido.getClienteId());
             stmtPedido.setTimestamp(2, Timestamp.valueOf(pedido.getFecha()));
-            stmtPedido.setDouble(3, pedido.getTotal()); // 👈 Usa el campo total del modelo
+            stmtPedido.setDouble(3, pedido.getTotal());
 
             stmtPedido.executeUpdate();
 
@@ -45,7 +42,13 @@ public class PedidoDAO {
 
     public List<Pedido> listarPorCliente(int clienteId) throws SQLException {
         List<Pedido> pedidos = new ArrayList<>();
-        String sql = "SELECT id, fecha, total FROM Pedidos WHERE cliente_id = ? ORDER BY fecha DESC";
+        String sql = """
+            SELECT p.id, p.fecha, p.total, c.nombre AS cliente_nombre
+            FROM Pedidos p
+            JOIN Clientes c ON p.cliente_id = c.id
+            WHERE p.cliente_id = ?
+            ORDER BY p.fecha DESC
+        """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -57,7 +60,8 @@ public class PedidoDAO {
                     pedido.setId(rs.getInt("id"));
                     pedido.setClienteId(clienteId);
                     pedido.setFecha(rs.getTimestamp("fecha").toLocalDateTime());
-                    pedido.setTotal(rs.getDouble("total")); // 👈 Carga el total desde la base
+                    pedido.setTotal(rs.getDouble("total"));
+                    pedido.setClienteNombre(rs.getString("cliente_nombre"));
                     pedido.setItems(obtenerItemsPedido(pedido.getId()));
                     pedidos.add(pedido);
                 }
@@ -68,7 +72,12 @@ public class PedidoDAO {
 
     public List<Pedido> listarTodos() throws SQLException {
         List<Pedido> pedidos = new ArrayList<>();
-        String sql = "SELECT id, cliente_id, fecha, total FROM Pedidos ORDER BY fecha DESC";
+        String sql = """
+            SELECT p.id, p.cliente_id, p.fecha, p.total, c.nombre AS cliente_nombre
+            FROM Pedidos p
+            JOIN Clientes c ON p.cliente_id = c.id
+            ORDER BY p.fecha DESC
+        """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -79,7 +88,8 @@ public class PedidoDAO {
                 pedido.setId(rs.getInt("id"));
                 pedido.setClienteId(rs.getInt("cliente_id"));
                 pedido.setFecha(rs.getTimestamp("fecha").toLocalDateTime());
-                pedido.setTotal(rs.getDouble("total")); // 👈 Carga el total desde la base
+                pedido.setTotal(rs.getDouble("total"));
+                pedido.setClienteNombre(rs.getString("cliente_nombre"));
                 pedido.setItems(obtenerItemsPedido(pedido.getId()));
                 pedidos.add(pedido);
             }

@@ -9,7 +9,8 @@ public class Pedido {
     private int id;
     private int clienteId;
     private LocalDateTime fecha;
-    private double total; // 👈 Este campo permite usar setTotal()
+    private double total;
+    private String clienteNombre; // 👈 Este campo debe existir
     private List<ItemPedido> items;
 
     public double calcularTotal() {
