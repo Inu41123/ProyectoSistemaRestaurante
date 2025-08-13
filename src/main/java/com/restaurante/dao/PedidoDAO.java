@@ -118,9 +118,22 @@ public class PedidoDAO {
     }
 
     private Plato obtenerPlato(int platoId) throws SQLException {
-        Plato plato = new Plato();
-        plato.setId(platoId);
-        return plato;
+        String sql = "SELECT nombre, precio FROM Platos WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, platoId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Plato plato = new Plato();
+                    plato.setId(platoId);
+                    plato.setNombre(rs.getString("nombre"));
+                    plato.setPrecio(rs.getDouble("precio"));
+                    return plato;
+                }
+            }
+        }
+        return null;
     }
 
     public void eliminar(int pedidoId) throws SQLException {
@@ -131,6 +144,38 @@ public class PedidoDAO {
 
             stmt.setInt(1, pedidoId);
             stmt.executeUpdate();
+        }
+    }
+
+    public void actualizar(Pedido pedido) throws SQLException {
+        String sqlUpdatePedido = "UPDATE Pedidos SET cliente_id = ?, fecha = ?, total = ? WHERE id = ?";
+        String sqlDeleteItems = "DELETE FROM Pedido_Platos WHERE pedido_id = ?";
+        String sqlInsertItems = "INSERT INTO Pedido_Platos (pedido_id, plato_id, cantidad) VALUES (?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdatePedido);
+             PreparedStatement stmtDeleteItems = conn.prepareStatement(sqlDeleteItems);
+             PreparedStatement stmtInsertItems = conn.prepareStatement(sqlInsertItems)) {
+
+            // Actualizar datos del pedido
+            stmtUpdate.setInt(1, pedido.getClienteId());
+            stmtUpdate.setTimestamp(2, Timestamp.valueOf(pedido.getFecha()));
+            stmtUpdate.setDouble(3, pedido.getTotal());
+            stmtUpdate.setInt(4, pedido.getId());
+            stmtUpdate.executeUpdate();
+
+            // Eliminar platos anteriores
+            stmtDeleteItems.setInt(1, pedido.getId());
+            stmtDeleteItems.executeUpdate();
+
+            // Insertar nuevos platos
+            for (ItemPedido item : pedido.getItems()) {
+                stmtInsertItems.setInt(1, pedido.getId());
+                stmtInsertItems.setInt(2, item.getPlato().getId());
+                stmtInsertItems.setInt(3, item.getCantidad());
+                stmtInsertItems.addBatch();
+            }
+            stmtInsertItems.executeBatch();
         }
     }
 }

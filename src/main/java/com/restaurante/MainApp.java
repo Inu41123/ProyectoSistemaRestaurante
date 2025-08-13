@@ -25,7 +25,8 @@ public class MainApp extends Application {
             // 3. Obtener el controlador principal
             MainController mainController = loader.getController();
 
-            // 4. Mostrar la ventana
+            // 4. Maximizar y mostrar la ventana
+            primaryStage.setMaximized(true);
             primaryStage.show();
 
             // 5. Inicialización tardía (después de mostrar la ventana)

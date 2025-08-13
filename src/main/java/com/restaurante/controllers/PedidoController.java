@@ -2,6 +2,9 @@ package com.restaurante.controllers;
 
 import com.restaurante.models.*;
 import com.restaurante.services.*;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import net.synedra.validatorfx.Validator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -29,8 +32,10 @@ public class PedidoController {
     @FXML private Spinner<Integer> spCantidad;
     @FXML private Button btnAgregar;
     @FXML private Button btnEliminar;
-    @FXML private Button btnGuardar;
+    @FXML private Button btnNuevoPedido;
+    @FXML private Button btnActualizarPedido;
     @FXML private Button btnRefrescarPedidos;
+    @FXML private Button btnVerDetallePedidos;
 
     @FXML private TableView<Pedido> tablaPedidos;
     @FXML private TableColumn<Pedido, Integer> colPedidoId;
@@ -44,6 +49,8 @@ public class PedidoController {
     private final Validator validator = new Validator();
     private final ObservableList<ItemPedido> itemsPedido = FXCollections.observableArrayList();
 
+    private Pedido pedidoSeleccionado = null;
+
     @FXML
     private void initialize() {
         configurarComponentes();
@@ -52,6 +59,20 @@ public class PedidoController {
             configurarValidaciones();
             cargarPedidos();
             actualizarTotal();
+        });
+
+        tablaPedidos.getSelectionModel().selectedItemProperty().addListener((obs, oldPedido, nuevoPedido) -> {
+            if (nuevoPedido != null) {
+                pedidoSeleccionado = nuevoPedido;
+                cbClientes.getSelectionModel().select(
+                        cbClientes.getItems().stream()
+                                .filter(c -> c.getId() == nuevoPedido.getClienteId())
+                                .findFirst().orElse(null)
+                );
+                itemsPedido.setAll(nuevoPedido.getItems());
+                tablaPlatosSeleccionados.refresh();
+                actualizarTotal();
+            }
         });
     }
 
@@ -86,7 +107,7 @@ public class PedidoController {
         });
 
         colPedidoId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colCliente.setCellValueFactory(new PropertyValueFactory<>("clienteNombre")); // 👈 nombre del cliente
+        colCliente.setCellValueFactory(new PropertyValueFactory<>("clienteNombre"));
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
 
@@ -185,20 +206,44 @@ public class PedidoController {
     }
 
     @FXML
+    private void actualizarPedido() {
+        guardarPedido();
+    }
+
+    @FXML
+    private void nuevoPedido() {
+        pedidoSeleccionado = null;
+        limpiarFormulario();
+    }
+
     private void guardarPedido() {
         if (!validator.validate()) {
             return;
         }
 
         try {
-            Pedido nuevoPedido = new Pedido();
-            nuevoPedido.setClienteId(cbClientes.getValue().getId());
-            nuevoPedido.setFecha(LocalDateTime.now());
-            nuevoPedido.setItems(new ArrayList<>(itemsPedido));
-            nuevoPedido.setTotal(nuevoPedido.calcularTotal());
+            Cliente cliente = cbClientes.getValue();
+            if (cliente == null) {
+                mostrarError("Seleccione un cliente");
+                return;
+            }
 
-            pedidoService.crearPedido(nuevoPedido);
-            mostrarExito("Pedido creado exitosamente");
+            if (pedidoSeleccionado != null) {
+                pedidoSeleccionado.setClienteId(cliente.getId());
+                pedidoSeleccionado.setItems(new ArrayList<>(itemsPedido));
+                pedidoSeleccionado.setTotal(pedidoSeleccionado.calcularTotal());
+                pedidoService.actualizarPedido(pedidoSeleccionado);
+                mostrarExito("Pedido actualizado exitosamente");
+            } else {
+                Pedido nuevoPedido = new Pedido();
+                nuevoPedido.setClienteId(cliente.getId());
+                nuevoPedido.setFecha(LocalDateTime.now());
+                nuevoPedido.setItems(new ArrayList<>(itemsPedido));
+                nuevoPedido.setTotal(nuevoPedido.calcularTotal());
+                pedidoService.crearPedido(nuevoPedido);
+                mostrarExito("Pedido creado exitosamente");
+            }
+
             limpiarFormulario();
             cargarPedidos();
         } catch (Exception e) {
@@ -248,5 +293,19 @@ public class PedidoController {
                     .text(mensaje)
                     .showError();
         });
+    }
+
+    @FXML
+    private void verDetallePedidos() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/restaurante/views/DetallePedidos.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = new Stage();
+            stage.setTitle("Detalle de Pedidos");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            mostrarError("No se pudo abrir la vista de detalle: " + e.getMessage());
+        }
     }
 }

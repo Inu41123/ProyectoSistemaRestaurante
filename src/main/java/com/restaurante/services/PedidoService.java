@@ -42,4 +42,10 @@ public class PedidoService {
             }
         }
     }
+
+    public void actualizarPedido(Pedido pedido) throws Exception {
+        validarPedido(pedido);
+        pedidoDAO.actualizar(pedido);
+    }
+
 }

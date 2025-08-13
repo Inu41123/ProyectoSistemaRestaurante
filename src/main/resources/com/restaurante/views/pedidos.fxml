@@ -52,10 +52,14 @@
         </TableView>
     </VBox>
 
-    <HBox style="-fx-padding: 10; -fx-alignment: center-right;">
+    <HBox spacing="10" style="-fx-padding: 10; -fx-alignment: center-right;">
         <Label fx:id="lblTotal" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
-        <Button fx:id="btnGuardar" text="Guardar Pedido" onAction="#guardarPedido"
-                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 8 15; -fx-font-size: 14;"/>
+
+        <Button fx:id="btnNuevoPedido" text="Nuevo Pedido" onAction="#nuevoPedido"
+                style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-padding: 8 15; -fx-font-size: 14;"/>
+
+        <Button fx:id="btnActualizarPedido" text="Actualizar Pedido" onAction="#actualizarPedido"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 8 15; -fx-font-size: 14;"/>
     </HBox>
 
     <HBox spacing="10" style="-fx-padding: 10;">
@@ -72,4 +76,11 @@
             <TableColumn fx:id="colTotal" text="Total" style="-fx-pref-width: 100;"/>
         </columns>
     </TableView>
+
+    <HBox spacing="10" style="-fx-padding: 10;">
+        <Label text="Ver todos los pedidos con detalle" style="-fx-font-weight: bold;"/>
+        <Button fx:id="btnVerDetallePedidos" text="Ver Detalle" onAction="#verDetallePedidos"
+                style="-fx-background-color: #8e44ad; -fx-text-fill: white;"/>
+    </HBox>
+
 </VBox>
