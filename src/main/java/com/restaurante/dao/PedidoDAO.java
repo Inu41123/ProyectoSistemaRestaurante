@@ -1,16 +1,19 @@
 package com.restaurante.dao;
 
 import com.restaurante.models.*;
+import com.restaurante.models.Pedido;
 import com.restaurante.utils.DatabaseConnection;
+import lombok.Data;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PedidoDAO {
 
     public void crear(Pedido pedido) throws SQLException {
-        String sqlPedido = "INSERT INTO Pedidos (cliente_id, fecha) VALUES (?, ?)";
+        String sqlPedido = "INSERT INTO Pedidos (cliente_id, fecha, total) VALUES (?, ?, ?)";
         String sqlItem = "INSERT INTO Pedido_Platos (pedido_id, plato_id, cantidad) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -19,6 +22,8 @@ public class PedidoDAO {
 
             stmtPedido.setInt(1, pedido.getClienteId());
             stmtPedido.setTimestamp(2, Timestamp.valueOf(pedido.getFecha()));
+            stmtPedido.setDouble(3, pedido.getTotal()); // 👈 Usa el campo total del modelo
+
             stmtPedido.executeUpdate();
 
             try (ResultSet generatedKeys = stmtPedido.getGeneratedKeys()) {
@@ -40,7 +45,7 @@ public class PedidoDAO {
 
     public List<Pedido> listarPorCliente(int clienteId) throws SQLException {
         List<Pedido> pedidos = new ArrayList<>();
-        String sql = "SELECT id, fecha FROM Pedidos WHERE cliente_id = ? ORDER BY fecha DESC";
+        String sql = "SELECT id, fecha, total FROM Pedidos WHERE cliente_id = ? ORDER BY fecha DESC";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -52,9 +57,31 @@ public class PedidoDAO {
                     pedido.setId(rs.getInt("id"));
                     pedido.setClienteId(clienteId);
                     pedido.setFecha(rs.getTimestamp("fecha").toLocalDateTime());
+                    pedido.setTotal(rs.getDouble("total")); // 👈 Carga el total desde la base
                     pedido.setItems(obtenerItemsPedido(pedido.getId()));
                     pedidos.add(pedido);
                 }
+            }
+        }
+        return pedidos;
+    }
+
+    public List<Pedido> listarTodos() throws SQLException {
+        List<Pedido> pedidos = new ArrayList<>();
+        String sql = "SELECT id, cliente_id, fecha, total FROM Pedidos ORDER BY fecha DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Pedido pedido = new Pedido();
+                pedido.setId(rs.getInt("id"));
+                pedido.setClienteId(rs.getInt("cliente_id"));
+                pedido.setFecha(rs.getTimestamp("fecha").toLocalDateTime());
+                pedido.setTotal(rs.getDouble("total")); // 👈 Carga el total desde la base
+                pedido.setItems(obtenerItemsPedido(pedido.getId()));
+                pedidos.add(pedido);
             }
         }
         return pedidos;

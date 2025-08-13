@@ -19,6 +19,10 @@ public class PedidoService {
         return pedidoDAO.listarPorCliente(clienteId);
     }
 
+    public List<Pedido> obtenerTodos() throws Exception {
+        return pedidoDAO.listarTodos();
+    }
+
     public void eliminarPedido(int pedidoId) throws Exception {
         pedidoDAO.eliminar(pedidoId);
     }

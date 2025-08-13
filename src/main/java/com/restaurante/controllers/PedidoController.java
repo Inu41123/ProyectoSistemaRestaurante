@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PedidoController {
 
@@ -30,6 +31,12 @@ public class PedidoController {
     @FXML private Button btnEliminar;
     @FXML private Button btnGuardar;
 
+    @FXML private TableView<Pedido> tablaPedidos;
+    @FXML private TableColumn<Pedido, Integer> colPedidoId;
+    @FXML private TableColumn<Pedido, Integer> colCliente;
+    @FXML private TableColumn<Pedido, LocalDateTime> colFecha;
+    @FXML private TableColumn<Pedido, Double> colTotal;
+
     private final ClienteService clienteService = new ClienteService();
     private final PlatoService platoService = new PlatoService();
     private final PedidoService pedidoService = new PedidoService();
@@ -42,6 +49,7 @@ public class PedidoController {
         Platform.runLater(() -> {
             cargarDatosIniciales();
             configurarValidaciones();
+            cargarPedidos();
             actualizarTotal();
         });
     }
@@ -75,6 +83,24 @@ public class PedidoController {
                 setText(empty ? null : String.format("$%.2f", subtotal));
             }
         });
+
+        colPedidoId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colCliente.setCellValueFactory(new PropertyValueFactory<>("clienteId"));
+        colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colTotal.setCellValueFactory(cd -> {
+            double total = cd.getValue().getItems().stream()
+                    .mapToDouble(item -> item.getPlato().getPrecio() * item.getCantidad())
+                    .sum();
+            return new SimpleObjectProperty<>(total);
+        });
+
+        colTotal.setCellFactory(tc -> new TableCell<>() {
+            @Override
+            protected void updateItem(Double total, boolean empty) {
+                super.updateItem(total, empty);
+                setText(empty ? null : String.format("$%.2f", total));
+            }
+        });
     }
 
     public void cargarDatosIniciales() {
@@ -91,6 +117,15 @@ public class PedidoController {
 
         } catch (Exception e) {
             mostrarError("Error al cargar datos: " + e.getMessage());
+        }
+    }
+
+    public void cargarPedidos() {
+        try {
+            List<Pedido> pedidos = pedidoService.obtenerTodos();
+            tablaPedidos.setItems(FXCollections.observableArrayList(pedidos));
+        } catch (Exception e) {
+            mostrarError("Error al cargar pedidos: " + e.getMessage());
         }
     }
 
@@ -168,6 +203,7 @@ public class PedidoController {
             pedidoService.crearPedido(nuevoPedido);
             mostrarExito("Pedido creado exitosamente");
             limpiarFormulario();
+            cargarPedidos();
         } catch (Exception e) {
             mostrarError("Error al guardar pedido: " + e.getMessage());
         }

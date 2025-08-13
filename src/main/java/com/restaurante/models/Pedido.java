@@ -9,9 +9,10 @@ public class Pedido {
     private int id;
     private int clienteId;
     private LocalDateTime fecha;
+    private double total; // 👈 Este campo permite usar setTotal()
     private List<ItemPedido> items;
 
-    public double getTotal() {
+    public double calcularTotal() {
         return items.stream()
                 .mapToDouble(item -> item.getPlato().getPrecio() * item.getCantidad())
                 .sum();
