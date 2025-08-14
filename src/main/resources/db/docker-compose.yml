@@ -8,7 +8,7 @@ services:
       - "11433:1433"  # Puerto externo 11433 → interno 1433
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "wibP!JD9z:p2:u2"  # Cambia esto por una contraseña segura
+      SA_PASSWORD: "123"  # Cambia esto por una contraseña segura
     volumes:
       - sqlserver_data:/var/opt/mssql  # Persistencia de datos
     networks:
