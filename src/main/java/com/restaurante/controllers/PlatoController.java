@@ -130,16 +130,23 @@ public class PlatoController {
                 platoService.crearPlato(plato);
                 mostrarExito("Plato creado exitosamente");
             } else {
+                // Actualizar plato existente
                 platoService.actualizarPlato(plato);
                 mostrarExito("Plato actualizado exitosamente");
+
+                // Verificación en consola
+                System.out.println("Plato actualizado: " + plato.getNombre() + " - $" + plato.getPrecio());
             }
+
+            // Refrescar tabla y vista
             limpiarFormulario();
             cargarPlatos();
+            tablaPlatos.refresh(); //fuerza el redibujado visual
+
         } catch (Exception e) {
             mostrarError(e.getMessage());
         }
     }
-
     @FXML
     private void eliminarPlato() {
         if (platoSeleccionado == null) return;

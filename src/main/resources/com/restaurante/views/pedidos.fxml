@@ -60,6 +60,9 @@
 
         <Button fx:id="btnActualizarPedido" text="Actualizar Pedido" onAction="#actualizarPedido"
                 style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 8 15; -fx-font-size: 14;"/>
+
+        <Button fx:id="btnEliminarPedido" text="Eliminar Pedido" onAction="#eliminarPedido"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-padding: 8 15; -fx-font-size: 14;"/>
     </HBox>
 
     <HBox spacing="10" style="-fx-padding: 10;">

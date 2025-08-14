@@ -42,6 +42,8 @@ public class PedidoController {
     @FXML private TableColumn<Pedido, String> colCliente;
     @FXML private TableColumn<Pedido, LocalDateTime> colFecha;
     @FXML private TableColumn<Pedido, Double> colTotal;
+    //nuevo boton
+    @FXML private Button btnEliminarPedido;
 
     private final ClienteService clienteService = new ClienteService();
     private final PlatoService platoService = new PlatoService();
@@ -216,6 +218,7 @@ public class PedidoController {
         limpiarFormulario();
     }
 
+    //agregar funcionalidad
     private void guardarPedido() {
         if (!validator.validate()) {
             return;
@@ -229,23 +232,42 @@ public class PedidoController {
             }
 
             if (pedidoSeleccionado != null) {
+                // Actualizar datos del pedido existente
                 pedidoSeleccionado.setClienteId(cliente.getId());
                 pedidoSeleccionado.setItems(new ArrayList<>(itemsPedido));
-                pedidoSeleccionado.setTotal(pedidoSeleccionado.calcularTotal());
+
+                // Recalcular y asignar el nuevo total
+                double nuevoTotal = pedidoSeleccionado.calcularTotal();
+                pedidoSeleccionado.setTotal(nuevoTotal);
+
+                // Actualizar en la base de datos
                 pedidoService.actualizarPedido(pedidoSeleccionado);
+
+                // Confirmación visual
                 mostrarExito("Pedido actualizado exitosamente");
+
+                // Refrescar tabla y vista
+                cargarPedidos();
+                tablaPedidos.refresh(); //fuerza el redibujado visual
+
+                // Verificación en consola
+                System.out.println("Total actualizado: $" + nuevoTotal);
             } else {
+                // Crear nuevo pedido
                 Pedido nuevoPedido = new Pedido();
                 nuevoPedido.setClienteId(cliente.getId());
                 nuevoPedido.setFecha(LocalDateTime.now());
                 nuevoPedido.setItems(new ArrayList<>(itemsPedido));
                 nuevoPedido.setTotal(nuevoPedido.calcularTotal());
+
                 pedidoService.crearPedido(nuevoPedido);
                 mostrarExito("Pedido creado exitosamente");
+
+                cargarPedidos();
+                tablaPedidos.refresh();
             }
 
             limpiarFormulario();
-            cargarPedidos();
         } catch (Exception e) {
             mostrarError("Error al guardar pedido: " + e.getMessage());
         }
@@ -307,5 +329,32 @@ public class PedidoController {
         } catch (Exception e) {
             mostrarError("No se pudo abrir la vista de detalle: " + e.getMessage());
         }
+    }
+//neuva funcionalidad
+    @FXML
+    private void eliminarPedido() {
+        if (pedidoSeleccionado == null) {
+            mostrarError("Seleccione un pedido para eliminar.");
+            return;
+        }
+
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmar eliminación");
+        confirmacion.setHeaderText("¿Está seguro de eliminar este pedido?");
+        confirmacion.setContentText("Esta acción no afectará al cliente ni a los platos.");
+
+        confirmacion.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    pedidoService.eliminarPedido(pedidoSeleccionado.getId());
+                    mostrarExito("Pedido eliminado exitosamente.");
+                    limpiarFormulario();
+                    cargarPedidos();
+                    tablaPedidos.refresh();
+                } catch (Exception e) {
+                    mostrarError("Error al eliminar pedido: " + e.getMessage());
+                }
+            }
+        });
     }
 }
