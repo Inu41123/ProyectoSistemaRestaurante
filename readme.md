@@ -54,8 +54,7 @@ restaurante/
 
 1. **Clonar el repositorio**  
    ```bash
-   git clone https://github.com/usuario/restaurante.git
-   cd restaurante
+   git clone https://github.com/Inu41123/ProyectoSistemaRestaurante.git
    ```
 
 ---
@@ -66,6 +65,3 @@ restaurante/
 **2.- Actualizar** las credenciales en DatabaseConnection.java.
 
 **3.- Compilar y ejecutar el proyecto**
-```bash
-mvn clean install
-mvn exec:java
